@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>School Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        h1 {
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+        .card {
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border-radius: 15px;
+        }
+        table thead {
+            background-color: #0d6efd;
+            color: white;
+        }
+        table tbody tr:hover {
+            background-color: #e9f5ff;
+        }
+        .btn-add {
+            display: flex;
+            align-items: center;
+        }
+        .btn-add i {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <h1>School Management System</h1>
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-3" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="teachers-tab" data-bs-toggle="tab" data-bs-target="#teachers" type="button" role="tab">Teachers</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="students-tab" data-bs-toggle="tab" data-bs-target="#students" type="button" role="tab">Students</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="classes-tab" data-bs-toggle="tab" data-bs-target="#classes" type="button" role="tab">Classes</button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="myTabContent">
+
+        <!-- Teachers Tab -->
+        <div class="tab-pane fade show active" id="teachers" role="tabpanel">
+            <div class="card p-4 mb-4">
+                <h4 class="mb-3">Add Teacher</h4>
+                <form id="teacherForm" class="row g-3">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="teacherName" placeholder="Name" required>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="teacherSubject" placeholder="Subject" required>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary btn-add"><i class="bi bi-plus-circle"></i> Add Teacher</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card p-3">
+                <table class="table table-hover table-bordered" id="teacherTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Subject</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Students Tab -->
+        <div class="tab-pane fade" id="students" role="tabpanel">
+            <div class="card p-4 mb-4">
+                <h4 class="mb-3">Add Student</h4>
+                <form id="studentForm" class="row g-3">
+                    <div class="col-md-4"><input type="text" class="form-control" id="studentName" placeholder="Name" required></div>
+                    <div class="col-md-2"><input type="number" class="form-control" id="studentAge" placeholder="Age" required></div>
+                    <div class="col-md-2"><input type="text" class="form-control" id="studentGrade" placeholder="Grade" required></div>
+                    <div class="col-md-2"><input type="text" class="form-control" id="studentClass" placeholder="Class" required></div>
+                    <div class="col-md-2"><input type="text" class="form-control" id="studentSection" placeholder="Section" required></div>
+                    <div class="col-12"><button type="submit" class="btn btn-success btn-add"><i class="bi bi-plus-circle"></i> Add Student</button></div>
+                </form>
+            </div>
+            <div class="card p-3">
+                <table class="table table-hover table-bordered" id="studentTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Age</th>
+                            <th>Grade</th>
+                            <th>Class</th>
+                            <th>Section</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Classes Tab -->
+        <div class="tab-pane fade" id="classes" role="tabpanel">
+            <div class="card p-4 mb-4">
+                <h4 class="mb-3">Add Class</h4>
+                <form id="classForm" class="row g-3">
+                    <div class="col-md-6"><input type="text" class="form-control" id="className" placeholder="Class Name" required></div>
+                    <div class="col-md-6"><input type="text" class="form-control" id="classSection" placeholder="Section" required></div>
+                    <div class="col-12"><button type="submit" class="btn btn-warning btn-add"><i class="bi bi-plus-circle"></i> Add Class</button></div>
+                </form>
+            </div>
+            <div class="card p-3">
+                <table class="table table-hover table-bordered" id="classTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Class Name</th>
+                            <th>Section</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const API_BASE = "http://localhost:8080/api";
+
+// TEACHERS
+async function fetchTeachers() {
+    const res = await fetch(`${API_BASE}/teachers`);
+    const data = await res.json();
+    const tbody = document.querySelector("#teacherTable tbody");
+    tbody.innerHTML = "";
+    data.forEach(t => {
+        tbody.innerHTML += `<tr>
+            <td>${t.id}</td>
+            <td>${t.name}</td>
+            <td>${t.subject}</td>
+            <td><button class="btn btn-danger btn-sm"><i class="bi bi-trash"></i> Delete</button></td>
+        </tr>`;
+    });
+}
+document.getElementById("teacherForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const name = document.getElementById("teacherName").value;
+    const subject = document.getElementById("teacherSubject").value;
+    await fetch(`${API_BASE}/teachers`, {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({name, subject})
+    });
+    document.getElementById("teacherForm").reset();
+    fetchTeachers();
+});
+fetchTeachers();
+
+// STUDENTS
+async function fetchStudents() {
+    const res = await fetch(`${API_BASE}/students`);
+    const data = await res.json();
+    const tbody = document.querySelector("#studentTable tbody");
+    tbody.innerHTML = "";
+    data.forEach(s => {
+        tbody.innerHTML += `<tr>
+            <td>${s.id}</td>
+            <td>${s.name}</td>
+            <td>${s.age}</td>
+            <td>${s.grade}</td>
+            <td>${s.className}</td>
+            <td>${s.section}</td>
+            <td><button class="btn btn-danger btn-sm"><i class="bi bi-trash"></i> Delete</button></td>
+        </tr>`;
+    });
+}
+document.getElementById("studentForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const name = document.getElementById("studentName").value;
+    const age = parseInt(document.getElementById("studentAge").value);
+    const grade = document.getElementById("studentGrade").value;
+    const className = document.getElementById("studentClass").value;
+    const section = document.getElementById("studentSection").value;
+    await fetch(`${API_BASE}/students`, {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({name, age, grade, className, section})
+    });
+    document.getElementById("studentForm").reset();
+    fetchStudents();
+});
+fetchStudents();
+
+// CLASSES
+async function fetchClasses() {
+    const res = await fetch(`${API_BASE}/classes`);
+    const data = await res.json();
+    const tbody = document.querySelector("#classTable tbody");
+    tbody.innerHTML = "";
+    data.forEach(c => {
+        tbody.innerHTML += `<tr>
+            <td>${c.id}</td>
+            <td>${c.className}</td>
+            <td>${c.section}</td>
+            <td><button class="btn btn-danger btn-sm"><i class="bi bi-trash"></i> Delete</button></td>
+        </tr>`;
+    });
+}
+document.getElementById("classForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const className = document.getElementById("className").value;
+    const section = document.getElementById("classSection").value;
+    await fetch(`${API_BASE}/classes`, {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({className, section})
+    });
+    document.getElementById("classForm").reset();
+    fetchClasses();
+});
+fetchClasses();
+</script>
+</body>
+</html>
